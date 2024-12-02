@@ -1,15 +1,20 @@
 
-suits = ['club','heart','spade','diamond']
-numbers = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack','queen','king']
+card_suits: list = ['club','heart','spade','diamond']
+card_numbers: list = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack','queen','king']
 
-def make_deck_list():
-    output = []
-    for suit in suits:
-        for n in numbers:
+def make_deck_list() -> list:
+    """
+    Takes no variables. Returns a list where each element is a tuple
+    representing a playing card. Tuples are of the form (number, suit)
+    :return: list
+    """
+    output: list = []
+    for suit in card_suits:
+        for n in card_numbers:
             output.append((n,suit))
     return output
 
-deck_list = [('ace', 'club'), (2, 'club'), (3, 'club'), (4, 'club'),
+deck_list: list = [('ace', 'club'), (2, 'club'), (3, 'club'), (4, 'club'),
              (5, 'club'), (6, 'club'), (7, 'club'), (8, 'club'),
              (9, 'club'), (10, 'club'), ('jack', 'club'), ('queen', 'club'),
              ('king', 'club'), ('ace', 'heart'), (2, 'heart'), (3, 'heart'),
@@ -25,22 +30,31 @@ deck_list = [('ace', 'club'), (2, 'club'), (3, 'club'), (4, 'club'),
 
 
 
-def make_hearts_values(jack_of_diamonds=False):
-    output = {}
+def make_hearts_values(jack_of_diamonds=False) -> dict:
+    """
+    Returns a dictionary where each key is a card and each value is the
+    point number that card takes on in the card game hearts. If
+    jack_of_diamonds is set to True, the jack of diamonds will be worth
+    -10 points rather than 0 - as it is in a popular variation of the
+    game.
+    :param jack_of_diamonds: bool
+    :return: dict
+    """
+    output: dict = {}
     for card in deck_list:
         if card[1] == 'heart':
-            value = 1
+            value: int = 1
         elif card == ('queen', 'spade'):
-            value = 13
+            value: int = 13
         else:
-            value = 0
+            value: int = 0
             if jack_of_diamonds and card == ('jack', 'diamond'):
-                value = -10
+                value: int = -10
         output[card] = value
     return output
 
 
-hearts_values = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, (4, 'club'): 0,
+hearts_values: dict = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, (4, 'club'): 0,
                  (5, 'club'): 0, (6, 'club'): 0, (7, 'club'): 0, (8, 'club'): 0,
                  (9, 'club'): 0, (10, 'club'): 0, ('jack', 'club'): 0, ('queen', 'club'): 0,
                  ('king', 'club'): 0, ('ace', 'heart'): 1, (2, 'heart'): 1, (3, 'heart'): 1,
@@ -57,7 +71,7 @@ hearts_values = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, (4, 'club')
 
 
 # may or may not end up included
-hearts_values_jack = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, (4, 'club'): 0,
+hearts_values_jack: dict = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, (4, 'club'): 0,
                       (5, 'club'): 0, (6, 'club'): 0, (7, 'club'): 0, (8, 'club'): 0,
                       (9, 'club'): 0, (10, 'club'): 0, ('jack', 'club'): 0, ('queen', 'club'): 0,
                       ('king', 'club'): 0, ('ace', 'heart'): 1, (2, 'heart'): 1, (3, 'heart'): 1,
