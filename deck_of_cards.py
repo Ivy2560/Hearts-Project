@@ -1,9 +1,6 @@
 from tkinter import *
 from card_values import card_suits, card_numbers, deck_list, hearts_values, hearts_values_jack
 
-#class DrawShapes:
-#    @staticmethod
-#    def draw_diamond():
 
 class PlayingCard(Canvas):
     def __init__(self, master, number, suit, can_play=True, value=False):
@@ -67,12 +64,8 @@ class PlayingCard(Canvas):
         coordinates_5 = [x,y, x+4,y+12, x-4,y+12]
         self.create_polygon(coordinates_5, fill=color)
 
-    def draw_A(self,x,y, color):
-        coordinates_1 = [x,y+25, x+3,y+25, x+5,y+16, x+9,y+16, x+11,y+25,x+14,y+25,
-                       x+9,y, x+5,y]
-        self.create_polygon(coordinates_1, fill=color)
-        coordinates_2 = [x+5,y+12, x+9,y+12, x+7,y+4]
-        self.create_polygon(coordinates_2, fill= self['background'])
+    def draw_char(self,x, y , char, color):
+        self.create_text([x,y], text=str(char), fill=color, font=('Helvetica 28'))
 
     #
     def draw_card(self):
@@ -94,9 +87,9 @@ window.geometry('1000x700')
 my_card = PlayingCard(window,'ace','spade')
 my_card.grid(row=0,column=0)
 
-my_card.draw_A(12,12, 'black')
+my_card.draw_char(20,25,'K', 'black')
 #my_card.draw_diamond(19,57, 'red')
-my_card.draw_club(19,57, 'black')
+my_card.draw_club(20,55, 'black')
 #my_card.draw_heart(80,30)
 
 
