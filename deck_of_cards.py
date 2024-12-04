@@ -111,7 +111,7 @@ class PlayingCard(Canvas):
     def __str__(self):
         return f'{self.number} of {self.suit}s'
 
-
+"""
 window = Tk()
 window.title('Hearts')
 window.geometry('1000x700')
@@ -128,3 +128,4 @@ def show_cards(start_card):
 show_cards(1)
 
 window.mainloop()
+"""

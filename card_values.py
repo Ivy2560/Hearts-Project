@@ -86,7 +86,3 @@ hearts_values_jack: dict = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, 
                       (6, 'diamond'): 0, (7, 'diamond'): 0, (8, 'diamond'): 0, (9, 'diamond'): 0,
                       (10, 'diamond'): 0, ('jack', 'diamond'): -10, ('queen', 'diamond'): 0, ('king', 'diamond'): 0}
 
-
-def shuffle_deck(deck):
-    shuffle(deck)
-
