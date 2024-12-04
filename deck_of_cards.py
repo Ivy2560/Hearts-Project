@@ -42,34 +42,37 @@ class PlayingCard(Canvas):
             self.delete()
             return return_value
     #
-    def draw_diamond (self,x,y):
+    def draw_diamond (self,x,y, color):
         coordinates = [x,y-14, x+7,y, x,y+14, x-7,y]
-        self.create_polygon(coordinates, fill='red')
+        self.create_polygon(coordinates, fill=color)
 
-    def draw_heart(self,x,y):
+    def draw_heart(self,x,y,color):
         coordinates_1 = [x-8,y-14, x,y] # bounding box is for the circle
-        self.create_arc(coordinates_1,start=0,extent=185,fill='red', outline='red')
+        self.create_arc(coordinates_1,start=0,extent=185,fill=color, outline=color)
         coordinates_2 = [x,y-14, x+8,y]
-        self.create_arc(coordinates_2, start=-5, extent=185, fill='red', outline='red')
+        self.create_arc(coordinates_2, start=-5, extent=185, fill=color, outline=color)
         coordinates_3 = [x-8,y-9, x+9,y-9, x,y+13]
-        self.create_polygon(coordinates_3, fill='red')
+        self.create_polygon(coordinates_3, fill=color)
 
-    def draw_club(self,x, y):
+    def draw_club(self,x, y, color):
         coordinates_1 = [x-5,y-13, x+5,y-3]
-        self.create_oval(coordinates_1, fill='black')
+        self.create_oval(coordinates_1, fill=color)
         coordinates_2 = [x-10,y-4, x,y+6]
-        self.create_oval(coordinates_2, fill='black')
+        self.create_oval(coordinates_2, fill=color)
         coordinates_3 = [x,y-4, x+10,y+6]
-        self.create_oval(coordinates_3, fill='black')
+        self.create_oval(coordinates_3, fill=color)
         #
         coordinates_4 = [x,y-9, x+4,y+1, x-4,y+1]
-        self.create_polygon(coordinates_4, fill='black')
+        self.create_polygon(coordinates_4, fill=color)
         coordinates_5 = [x,y, x+4,y+12, x-4,y+12]
-        self.create_polygon(coordinates_5, fill='black')
+        self.create_polygon(coordinates_5, fill=color)
 
-    def draw_a(self,x,y, color):
-        coordinates = []
-        self.create_polygon(coordinates, fill=color)
+    def draw_A(self,x,y, color):
+        coordinates_1 = [x,y+25, x+3,y+25, x+5,y+16, x+9,y+16, x+11,y+25,x+14,y+25,
+                       x+9,y, x+5,y]
+        self.create_polygon(coordinates_1, fill=color)
+        coordinates_2 = [x+5,y+12, x+9,y+12, x+7,y+4]
+        self.create_polygon(coordinates_2, fill= self['background'])
 
     #
     def draw_card(self):
@@ -88,12 +91,14 @@ class DeckOfCards():
 window = Tk()
 window.title('Hearts')
 window.geometry('1000x700')
-my_card = PlayingCard(window,'ace','spade',False)
+my_card = PlayingCard(window,'ace','spade')
 my_card.grid(row=0,column=0)
 
-my_card.draw_diamond(20,30)
-my_card.draw_club(50,30)
+my_card.draw_A(12,12, 'black')
+#my_card.draw_diamond(19,57, 'red')
+my_card.draw_club(19,57, 'black')
 #my_card.draw_heart(80,30)
+
 
 
 
