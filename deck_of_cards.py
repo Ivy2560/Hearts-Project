@@ -1,5 +1,5 @@
 from tkinter import *
-from card_values import card_suits, card_numbers, deck_list, hearts_values, hearts_values_jack
+from card_values import card_suits, card_numbers, deck_list
 
 class PlayingCard(Canvas):
     def __init__(self, master, card, can_play=True, value=None):
