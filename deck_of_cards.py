@@ -34,7 +34,6 @@ class PlayingCard(Canvas):
         self.bind('<Button-1>',self.card_selected)
 
     def card_selected(self,event):
-        print('Got here')
         if self.can_play:
             return_value = self.value
             self.destroy()
@@ -107,6 +106,8 @@ class PlayingCard(Canvas):
             char = str(self.number)
         self.draw_char(20,25,char, color)
 
+    def get_value(self):
+        return self.value
 
     def __str__(self):
         return f'{self.number} of {self.suit}s'
