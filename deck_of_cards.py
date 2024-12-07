@@ -13,7 +13,7 @@ class PlayingCard(Canvas):
             card_color = 'white'
         else: # not can_play
             card_color = 'grey'
-        super().__init__(master, width=5*30,height=7*30,
+        super().__init__(master, width=5*10,height=7*10,
                          bg=card_color,bd=3, relief='sunken')
         self.number = number
         self.suit = suit

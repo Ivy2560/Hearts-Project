@@ -3,7 +3,7 @@ from gui import *
 def main():
     window = Tk()
     window.title('Hearts')
-    window.geometry('1000x700')
+    window.geometry('1100x700')
     window.resizable(False, False)
     Gui(window)
     window.mainloop()

@@ -8,7 +8,7 @@ class Gui:
 
         # game play attributes
         # toggleable by user
-        self.num_players = 4
+        self.num_players = 3
         self.points_till_loss = 100
         self.jack_of_diamonds = False
         self.players = ['Player 1', 'Player 2', 'Player 3', 'Player 4']
@@ -22,6 +22,7 @@ class Gui:
         self.round_number = 1
         self.starts_trick = None
         self.can_play_hearts = False
+        self.selected_card = None
 
         self.start_screen()
 
@@ -64,7 +65,7 @@ class Gui:
             if self.num_players == 5:
                 shuffled_deck.remove((2,'club'))
         # DOUBLE CHECK LATER
-        hand_size = len(shuffled_deck) // 4
+        hand_size = len(shuffled_deck) // self.num_players
         shuffle(shuffled_deck)
         for player in self.players:
             self.hands_dict[player] = shuffled_deck[:hand_size]
@@ -74,6 +75,7 @@ class Gui:
         for player in self.players:
             self.sort_hand(player)
         print(self.hands_dict)
+        print('VERY IMPORTANT! We need a redeal feature after the passing phase for if delt only point cards for 5 player hearts ')
 
 
     def passing_phase(self):
@@ -95,11 +97,15 @@ class Gui:
             order.append(self.players[player_index])
         return order
 
-    def play_turn(self,player, trick_suit, first_trick=False, first_turn=False):
+    def select_card(self, event):
+        pass
+
+    def play_turn(self,player, trick_suit, first_trick=False):
+        first_of_trick = trick_suit is None
         force_suit = False
-        if trick_suit is not None:
+        if not first_of_trick:
             for card in self.hands_dict[player]:
-                if card[1] is trick_suit:
+                if card[1] == trick_suit:
                     force_suit = True
                     break
         #
@@ -107,34 +113,48 @@ class Gui:
         card_displays = []
         for card in self.hands_dict[player]:
             # logic for if cards are playable
-            if first_trick and first_turn:
-                if self.num_players != 5:
-                    can_play = card is (2, 'club')
-                else: # self.num_players != 5
-                    can_play = card is (3, 'club')
+            if first_of_trick:
+                if first_trick:
+                    if self.num_players != 5:
+                        can_play = card == (2, 'club')
+                    else: # self.num_players != 5
+                        can_play = card == (3, 'club')
+                else: # first of trick but not first trick
+                    # we have to check if hearts are playable, but not
+                    # if queen of spades is cus its not the first trick
+                    if not self.can_play_hearts:
+                        can_play = card[1] != 'heart'
+                    else:
+                        can_play = True
             elif force_suit:
                 # don't have to check for Q of spades because first
                 # trick suit will never be spades
-                can_play = card[1] is trick_suit
-            elif :
-                # if we're not forcing the suit, it could be because
-                # they are starting the trick or because they are
-                # playing later so we have to check for hearts
-
+                can_play = card[1] == trick_suit
             else: # they don't have the suit a
-                if first_trick
-
-            new_card = PlayingCard(self.hand_frame, card, can_play)
+                if first_trick:
+                    can_play = (card != ('queen', 'spades')) and (card[1] != 'heart')
+                else:
+                    can_play = True
+            #
+            #
+            value = hearts_values[card]
+            new_card = PlayingCard(self.hand_frame, card, can_play, value)
+            PlayingCard.bind('<Button-1>', self.select_card)
             card_displays.append(new_card)
             new_card.pack(side='left')
         self.hand_frame.pack(side='bottom')
+        #
+        while self.selected_card == None:
+            pass
+        self.selected_card = None
 
     def play_trick(self, first_trick=False):
         # a trick won't always start with the same player
         trick_order = self.turn_order()
-        trick_suit = self.play_turn(trick_order[0], None, first_trick, True)
-        for player in trick_order[0:]:
-            self.play_turn(player, trick_suit, first_trick)
+        trick_suit = self.play_turn(trick_order[0], None, first_trick)
+        raise ValueError
+        #for player in trick_order[0:]:
+        #    self.play_turn(player, trick_suit, first_trick)
 
     def play_round(self):
         self.round_points_dict = {p: 0 for p in self.players}
