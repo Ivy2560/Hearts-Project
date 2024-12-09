@@ -98,7 +98,12 @@ class Gui:
         return order
 
     def select_card(self, event):
-        pass
+        card = event.widget
+        print(card)
+        if card.can_play:
+            self.selected_card = card.get_card()
+            print(self.selected_card)
+            card.destroy()
 
     def play_turn(self,player, trick_suit, first_trick=False):
         first_of_trick = trick_suit is None
@@ -139,22 +144,32 @@ class Gui:
             #
             value = hearts_values[card]
             new_card = PlayingCard(self.hand_frame, card, can_play, value)
-            PlayingCard.bind('<Button-1>', self.select_card)
+            new_card.bind('<Button-1>', self.select_card)
             card_displays.append(new_card)
             new_card.pack(side='left')
         self.hand_frame.pack(side='bottom')
         #
-        while self.selected_card == None:
-            pass
+        while True:
+            print('Waiting for event')
+            self.window.wait_window()
+            print("event detected")
+            print(self.selected_card)
+            if self.selected_card is not None:
+                print('Reached Break')
+                break
+        # raise ValueError
+        card_suit = self.selected_card[1]
         self.selected_card = None
+        print("TRICK COMPLETE!")
+        return card_suit
+
 
     def play_trick(self, first_trick=False):
         # a trick won't always start with the same player
         trick_order = self.turn_order()
         trick_suit = self.play_turn(trick_order[0], None, first_trick)
-        raise ValueError
-        #for player in trick_order[0:]:
-        #    self.play_turn(player, trick_suit, first_trick)
+        for player in trick_order[0:]:
+            self.play_turn(player, trick_suit, first_trick)
 
     def play_round(self):
         self.round_points_dict = {p: 0 for p in self.players}

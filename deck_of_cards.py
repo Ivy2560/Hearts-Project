@@ -31,14 +31,8 @@ class PlayingCard(Canvas):
             self.value = value
 
         self.draw_card()
-        self.bind('<Button-1>',self.card_selected)
+        # self.bind('<Button-1>',self.card_selected)
 
-    def card_selected(self,event):
-        if self.can_play:
-            return_value = self.value
-            self.destroy()
-            print(return_value)
-            return return_value
     #
     def draw_diamond (self,x,y, color):
         coordinates = [x,y-14, x+7,y, x,y+14, x-7,y]
@@ -108,6 +102,9 @@ class PlayingCard(Canvas):
 
     def get_value(self):
         return self.value
+
+    def get_card(self):
+        return (self.number, self.suit)
 
     def __str__(self):
         return f'{self.number} of {self.suit}s'
