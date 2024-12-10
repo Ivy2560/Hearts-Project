@@ -3,6 +3,13 @@ from card_values import card_suits, card_numbers, deck_list
 
 class PlayingCard(Canvas):
     def __init__(self, master, card, can_play=True, value=None):
+        """
+
+        :param master:
+        :param card:
+        :param can_play:
+        :param value:
+        """
         (number, suit) = card
         if number not in card_numbers:
             raise ValueError('Invalid card number')

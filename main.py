@@ -1,6 +1,10 @@
 from gui import *
 
 def main():
+    """
+
+    :return:
+    """
     window = Tk()
     window.title('Hearts')
     window.geometry('1100x700')

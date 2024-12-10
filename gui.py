@@ -4,6 +4,10 @@ from deck_of_cards import PlayingCard
 
 class Gui:
     def __init__(self,window):
+        """
+
+        :param window:
+        """
         self.window = window
 
         # game play attributes

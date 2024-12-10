@@ -1,4 +1,5 @@
 from random import shuffle
+from typing import Optional
 
 card_suits: list = ['club','heart','spade','diamond']
 card_numbers: list = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack','queen','king']
@@ -148,9 +149,9 @@ def highest_hearts(cards: list, suit: str) -> tuple:
     there are no cards in list cards of the provided suit
     :param cards: list
     :param suit: str
-    :return:
+    :return: tuple
     """
-    highest = None
+    highest: Optional[tuple] = None
     for card in cards:
         if card[1] != suit:
             continue
