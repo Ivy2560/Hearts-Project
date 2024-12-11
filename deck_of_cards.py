@@ -113,6 +113,9 @@ class PlayingCard(Canvas):
     def get_card(self):
         return (self.number, self.suit)
 
+    def get_can_play(self):
+        return self.can_play
+
     def __str__(self):
         return f'{self.number} of {self.suit}s'
 

@@ -24,7 +24,6 @@ class Gui:
         # other
         self.current_player = self.players[0]
         self.round_number = 1
-        self.starts_trick = None
         self.can_play_hearts = False
         self.selected_card = None
 
@@ -93,34 +92,45 @@ class Gui:
         else:  # pass_indicator == 0: # no pass
             pass
 
-    def turn_order(self):
-        order = []
-        first_index = self.players.index(self.starts_trick)
-        for n in range(self.num_players):
-            player_index = (first_index +n) % self.num_players
-            order.append(self.players[player_index])
-        return order
+    def next_player(self):
+        current_index = self.players.index(self.current_player)
+        next_index = (current_index + 1) % self.num_players
+        next_player = self.players[next_index]
+        return next_player
 
     def select_card(self, event):
         card = event.widget
         print(card)
         if card.can_play:
-            self.selected_card = card.get_card()
+            self.selected_card = card
             print(self.selected_card)
-            card.destroy()
 
-    def play_turn(self,player, trick_suit, first_trick=False):
+    def play_card(self):
+        if self.selected_card is not None and self.selected_card.get_can_play():
+            card_value = self.selected_card.get_value()
+            card_tuple = self.selected_card.get_card()
+            self.hands_dict[self.current_player].remove(card_tuple)
+            self.points_dict[self.current_player] += card_value
+            #
+            self.selected_card.destroy()
+            self.selected_card = None
+            self.current_player = self.next_player()
+
+    def play_turn(self, trick_suit, first_trick=False):
+        ##
+        # add logic for show hand button
+        ##
         first_of_trick = trick_suit is None
         force_suit = False
         if not first_of_trick:
-            for card in self.hands_dict[player]:
+            for card in self.hands_dict[self.current_player]:
                 if card[1] == trick_suit:
                     force_suit = True
                     break
         #
         self.hand_frame = Frame(self.window)
         card_displays = []
-        for card in self.hands_dict[player]:
+        for card in self.hands_dict[self.current_player]:
             # logic for if cards are playable
             if first_of_trick:
                 if first_trick:
@@ -153,27 +163,12 @@ class Gui:
             new_card.pack(side='left')
         self.hand_frame.pack(side='bottom')
         #
-        while True:
-            print('Waiting for event')
-            self.window.wait_window()
-            print("event detected")
-            print(self.selected_card)
-            if self.selected_card is not None:
-                print('Reached Break')
-                break
-        # raise ValueError
-        card_suit = self.selected_card[1]
-        self.selected_card = None
-        print("TRICK COMPLETE!")
-        return card_suit
+        self.play_card_button = Button(self.hand_frame,text='Play Card',command=self.play_card)
 
 
     def play_trick(self, first_trick=False):
         # a trick won't always start with the same player
-        trick_order = self.turn_order()
-        trick_suit = self.play_turn(trick_order[0], None, first_trick)
-        for player in trick_order[0:]:
-            self.play_turn(player, trick_suit, first_trick)
+        self.play_turn(None, first_trick)
 
     def play_round(self):
         self.round_points_dict = {p: 0 for p in self.players}
@@ -187,7 +182,7 @@ class Gui:
             starting_card = (3, 'club')
         for (player,hand) in self.hands_dict.items():
             if starting_card in hand:
-                self.starts_trick = player
+                self.current_player = player
                 break
         #
         self.play_trick(True) # first trick when Q of spades can't be played

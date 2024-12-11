@@ -70,25 +70,6 @@ hearts_values: dict = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, (4, '
                  (6, 'diamond'): 0, (7, 'diamond'): 0, (8, 'diamond'): 0, (9, 'diamond'): 0,
                  (10, 'diamond'): 0, ('jack', 'diamond'): 0, ('queen', 'diamond'): 0, ('king', 'diamond'): 0}
 
-
-
-# may or may not end up included
-hearts_values_jack: dict = {('ace', 'club'): 0, (2, 'club'): 0, (3, 'club'): 0, (4, 'club'): 0,
-                      (5, 'club'): 0, (6, 'club'): 0, (7, 'club'): 0, (8, 'club'): 0,
-                      (9, 'club'): 0, (10, 'club'): 0, ('jack', 'club'): 0, ('queen', 'club'): 0,
-                      ('king', 'club'): 0, ('ace', 'heart'): 1, (2, 'heart'): 1, (3, 'heart'): 1,
-                      (4, 'heart'): 1, (5, 'heart'): 1, (6, 'heart'): 1, (7, 'heart'): 1,
-                      (8, 'heart'): 1, (9, 'heart'): 1, (10, 'heart'): 1, ('jack', 'heart'): 1,
-                      ('queen', 'heart'): 1, ('king', 'heart'): 1, ('ace', 'spade'): 0, (2, 'spade'): 0,
-                      (3, 'spade'): 0, (4, 'spade'): 0, (5, 'spade'): 0, (6, 'spade'): 0,
-                      (7, 'spade'): 0, (8, 'spade'): 0, (9, 'spade'): 0, (10, 'spade'): 0,
-                      ('jack', 'spade'): 0, ('queen', 'spade'): 13, ('king', 'spade'): 0, ('ace', 'diamond'): 0,
-                      (2, 'diamond'): 0, (3, 'diamond'): 0, (4, 'diamond'): 0, (5, 'diamond'): 0,
-                      (6, 'diamond'): 0, (7, 'diamond'): 0, (8, 'diamond'): 0, (9, 'diamond'): 0,
-                      (10, 'diamond'): 0, ('jack', 'diamond'): -10, ('queen', 'diamond'): 0, ('king', 'diamond'): 0}
-
-
-
 hearts_card_order_list: list = [(2, 'club'), (3, 'club'), (4, 'club'), (5, 'club'),
                                 (6, 'club'), (7, 'club'), (8, 'club'), (9, 'club'),
                                 (10, 'club'), ('jack', 'club'), ('queen', 'club'), ('king', 'club'),
