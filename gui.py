@@ -115,6 +115,7 @@ class Gui:
             self.selected_card.destroy()
             self.selected_card = None
             self.current_player = self.next_player()
+            self.next_turn_button = Button(self.window)
 
     def play_turn(self, trick_suit, first_trick=False):
         ##
@@ -163,7 +164,8 @@ class Gui:
             new_card.pack(side='left')
         self.hand_frame.pack(side='bottom')
         #
-        self.play_card_button = Button(self.hand_frame,text='Play Card',command=self.play_card)
+        self.play_card_button = Button(self.hand_frame,text='Play Selected Card',command=self.play_card)
+        self.pack
 
 
     def play_trick(self, first_trick=False):
