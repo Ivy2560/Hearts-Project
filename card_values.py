@@ -1,5 +1,4 @@
 from random import shuffle
-from typing import Optional
 
 card_suits: list = ['club','heart','spade','diamond']
 card_numbers: list = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack','queen','king']
@@ -32,7 +31,7 @@ deck_list: list = [('ace', 'club'), (2, 'club'), (3, 'club'), (4, 'club'),
 
 
 
-def make_hearts_values(jack_of_diamonds=False) -> dict:
+def make_hearts_values(jack_of_diamonds: bool=False) -> dict:
     """
     Returns a dictionary where each key is a card and each value is the
     point number that card takes on in the card game hearts. If
@@ -87,7 +86,7 @@ hearts_card_order_list: list = [(2, 'club'), (3, 'club'), (4, 'club'), (5, 'club
                                 (10, 'heart'), ('jack', 'heart'), ('queen', 'heart'), ('king', 'heart'),
                                 ('ace', 'heart')]
 
-def make_hearts_order_dict():
+def make_hearts_order_dict() -> dict:
     """
     Creates a dictionary consisting of the order cards should
     be shown in a player's hand in the card game hearts
@@ -136,7 +135,7 @@ def highest_hearts(cards: list, suit: str) -> tuple:
     for card in cards:
         if card[1] != suit:
             continue
-        elif highest is None:  # and card[1] == suit
+        elif highest == tuple():  # and card[1] == suit
             highest = card
         else:  # we need to compare
             if hearts_card_order[highest] < hearts_card_order[card]:
