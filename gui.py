@@ -42,7 +42,7 @@ class Gui:
     def start_screen(self):
         self.buttons_frame = Frame(self.window)
 
-        self.start_game = Button(self.buttons_frame, text='START GAME', command=self.play_game)
+        self.start_game = Button(self.buttons_frame, text='START GAME', command=self.start_game)
         self.game_options = Button(self.buttons_frame, text='Options')
         self.game_instructions = Button(self.buttons_frame, text='Instructions')
         self.game_stats = Button(self.buttons_frame, text='Local Stats')
@@ -103,14 +103,15 @@ class Gui:
 
 
     def passing_phase(self):
-        pass_indicator = self.round_number % 4
-        if pass_indicator == 1:  # pass to right
+        pass_indicator = self.round_number % self.num_players
+        if pass_indicator == 1:  # pass to left
             pass
-        elif pass_indicator == 2:  # pass to left
+        elif pass_indicator == 2:  # pass to right
             pass
         elif pass_indicator == 3:  # pass across
+            # gets skipped in 3 player hearts
             pass
-        else:  # pass_indicator == 0: # no pass
+        elif pass_indicator == 0: # no pass
             pass
 
     def change_current_player(self, player):
@@ -122,7 +123,6 @@ class Gui:
             order.append(self.players[player_index])
         #
         for i in range(self.num_players):
-            print("got here")
             p = order[i]
             self.player_labels[i].config(text=f'{p}: {self.round_points_dict[p]} points')
 
@@ -261,13 +261,14 @@ class Gui:
         self.first_trick = True
         self.turns_played = 0
         self.cards_on_table = {}
+        if self.max_points() < self.points_till_loss:
+            self.finish_game()
+            return
         self.next_turn_button = Button(self.window, text=f'Start Round({self.current_player})',command=self.start_round)
         self.next_turn_button.pack(side='bottom')
 
 
-
-
-    def play_game(self):
+    def start_game(self):
         self.buttons_frame.destroy()
         self.points_dict = {p: 0 for p in self.players}
         self.round_number = 1
@@ -281,6 +282,9 @@ class Gui:
             side, anchor = self.player_label_positions[i]
             new_label.pack(side=side,anchor=anchor)
             self.player_labels.append(new_label)
+
+    def finish_game(self):
+        pass
 
 
 

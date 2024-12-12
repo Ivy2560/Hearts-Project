@@ -131,7 +131,7 @@ def highest_hearts(cards: list, suit: str) -> tuple:
     :param suit: str
     :return: tuple
     """
-    highest: Optional[tuple] = None
+    highest: tuple = tuple()
     for card in cards:
         if card[1] != suit:
             continue
