@@ -11,11 +11,17 @@ class Gui:
         self.window = window
 
         # game play attributes
+        self.player_label_positions = [('bottom','center'),
+                                       ('left','center'),
+                                       ('top','nw'),
+                                       ('top','ne'),
+                                       ('right','center')]
+        self.player_labels = []
         # toggleable by user
-        self.num_players = 4
+        self.num_players = 5
         self.points_till_loss = 100
         self.jack_of_diamonds = False
-        self.players = ['Player 1', 'Player 2', 'Player 3', 'Player 4']
+        self.players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5']
         # player dicts
         self.points_dict = {p:0 for p in self.players}
         # round update
@@ -46,7 +52,7 @@ class Gui:
         self.game_options.pack(side='top')
         self.game_instructions.pack(side='top')
         self.game_stats.pack(side='top')
-        self.buttons_frame.pack(anchor='center')
+        self.buttons_frame.pack(side='bottom',anchor='center')
 
 
     def max_points(self):
@@ -78,12 +84,22 @@ class Gui:
         for player in self.players:
             self.hands_dict[player] = shuffled_deck[:hand_size]
             shuffled_deck = shuffled_deck[hand_size:]
+        no_redeal = True
+        for hand in self.hands_dict.values():
+            has_playable = False
+            for card in hand:
+                if card != ('queen','spade') or card[1] != 'heart':
+                    has_playable = True
+                    break
+            no_redeal = no_redeal and has_playable
+        if not no_redeal:
+            self.hands_dict = {p: [] for p in self.players}
+            self.deal_cards()
+
         #
         # sort hands
         for player in self.players:
             self.sort_hand(player)
-        print(self.hands_dict)
-        print('VERY IMPORTANT! We need a redeal feature after the passing phase for if delt only point cards for 5 player hearts ')
 
 
     def passing_phase(self):
@@ -97,11 +113,28 @@ class Gui:
         else:  # pass_indicator == 0: # no pass
             pass
 
+    def change_current_player(self, player):
+        self.current_player = player
+        order = []
+        first_index = self.players.index(self.current_player)
+        for n in range(self.num_players):
+            player_index = (first_index + n) % self.num_players
+            order.append(self.players[player_index])
+        #
+        for i in range(self.num_players):
+            print("got here")
+            p = order[i]
+            self.player_labels[i].config(text=f'{p}: {self.round_points_dict[p]} points')
+
+
+
     def next_player(self):
         current_index = self.players.index(self.current_player)
         next_index = (current_index + 1) % self.num_players
         next_player = self.players[next_index]
-        return next_player
+        self.change_current_player(next_player)
+
+
 
     def select_card(self, event):
         card = event.widget
@@ -123,7 +156,7 @@ class Gui:
             #
             self.hand_frame.destroy()
             self.selected_card = None
-            self.current_player = self.next_player()
+            self.next_player()
             print(self.turns_played)
             if self.turns_played % self.num_players == 0:
                 if len(self.hands_dict[self.players[0]]) == 0:
@@ -135,7 +168,7 @@ class Gui:
                     for card in self.cards_on_table:
                         self.round_points_dict[winning_player] += hearts_values[card]
                     #
-                    self.current_player = winning_player
+                    self.change_current_player(winning_player)
                     self.trick_suit = None
                     self.cards_on_table = {}
                     self.first_trick = False
@@ -181,13 +214,11 @@ class Gui:
                 can_play = card[1] == self.trick_suit
             else: # they don't have the suit a
                 if self.first_trick:
-                    can_play = (card != ('queen', 'spades')) and (card[1] != 'heart')
+                    can_play = (card != ('queen', 'spade')) and (card[1] != 'heart')
                 else:
                     can_play = True
             #
-            #
-            value = hearts_values[card]
-            new_card = PlayingCard(self.hand_frame, card, can_play, value)
+            new_card = PlayingCard(self.hand_frame, card, can_play)
             new_card.bind('<Button-1>', self.select_card)
             card_displays.append(new_card)
             new_card.pack(side='left')
@@ -203,7 +234,7 @@ class Gui:
             starting_card = (3, 'club')
         for (player,hand) in self.hands_dict.items():
             if starting_card in hand:
-                self.current_player = player
+                self.change_current_player(player)
                 break
         #
         self.play_turn() # first trick when Q of spades can't be played
@@ -221,7 +252,7 @@ class Gui:
         #
         self.hands_dict = {p: [] for p in self.players}  # list so sortable
         self.round_points_dict = {p: 0 for p in self.players}
-        self.current_player = self.players[0]
+        self.change_current_player(self.players[0])
         self.round_number += 1
         self.can_play_hearts = False
         self.selected_card = None
@@ -243,6 +274,13 @@ class Gui:
         #
         self.next_turn_button = Button(self.window, text=f'Start Round({self.current_player})',command=self.start_round)
         self.next_turn_button.pack(side='bottom')
+        #
+        self.player_labels = []
+        for i in range(self.num_players):
+            new_label = Label(self.window,text=f'{self.players[i]}: 0 points')
+            side, anchor = self.player_label_positions[i]
+            new_label.pack(side=side,anchor=anchor)
+            self.player_labels.append(new_label)
 
 
 
