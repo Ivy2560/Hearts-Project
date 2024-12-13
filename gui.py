@@ -1,15 +1,17 @@
+from cProfile import label
 from tkinter import *
 from card_values import *
 from deck_of_cards import PlayingCard
 
 class Gui:
-    def __init__(self,window):
+    def __init__(self,window: Tk):
         """
 
         :param window:
         """
         self.window = window
 
+        self.game_stats = ''
         # game play attributes
         self.player_label_positions = [('bottom','center'),
                                        ('left','center'),
@@ -18,17 +20,25 @@ class Gui:
                                        ('right','center')]
         self.player_labels = []
         # toggleable by user
-        self.num_players = 5
-        self.points_till_loss = 100
+        self.points_till_loss = 1
         self.jack_of_diamonds = False
-        self.players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5']
-        # player dicts
-        self.points_dict = {p:0 for p in self.players}
+        self.five_players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5']
+        self.num_players = 4
+        self.players = self.five_players[:4]
         # round update
-        self.hands_dict = {p:[] for p in self.players} # list so sortable
-        self.round_points_dict = {p:0 for p in self.players}
+        self.round_number = 1
         self.current_player = self.players[0]
-        self.round_number = 0
+
+        self.start_screen()
+
+    def initialize_round_values(self) -> None:
+        self.hands_dict = {p: [] for p in self.players}  # list so sortable
+        self.round_points_dict = {p: 0 for p in self.players}
+        if self.player_labels == []:
+            self.change_current_player(self.players[0])
+        else:
+            self.current_player = self.players[0]
+        self.round_number += 1
         self.can_play_hearts = False
         self.selected_card = None
         #
@@ -41,39 +51,79 @@ class Gui:
         for player in self.players:
             self.pass_cards[player] = []
 
-        self.start_screen()
+    def start_screen(self) -> None:
+        print(self.num_players)
+        print(self.players)
+        self.clear_window()
+        buttons_frame = Frame(self.window)
 
-    def start_screen(self):
-        for child in self.window.winfo_children():
-            child.destroy()
-        self.buttons_frame = Frame(self.window)
-
-        self.start_game = Button(self.buttons_frame, text='START GAME', command=self.start_game)
-        self.game_options = Button(self.buttons_frame, text='Options')
-        self.game_instructions = Button(self.buttons_frame, text='Instructions', fg='red',command=self.show_instructions)
-        self.game_stats = Button(self.buttons_frame, text='Local Stats')
+        start_game_button = Button(buttons_frame, text='START GAME', command=self.start_game)
+        game_options = Button(buttons_frame, text='Options', command=self.options_screen)
+        game_instructions = Button(buttons_frame, text='Instructions',command=self.show_instructions)
+        game_stats = Button(buttons_frame, text='Game Stats', command=self.stats_screen)
         # back button runs start_screen
         #
-        self.start_game.pack(side='top')
-        self.game_options.pack(side='top')
-        self.game_instructions.pack(side='top')
-        self.game_stats.pack(side='top')
-        self.buttons_frame.pack(side='bottom',anchor='center')
+        start_game_button.pack(side='top')
+        game_options.pack(side='top')
+        game_instructions.pack(side='top')
+        game_stats.pack(side='top')
+        buttons_frame.pack(side='bottom',anchor='center')
 
-    def show_instructions(self):
-        #for child in self.window.winfo_children():
-        #    child.destroy()
+    def options_screen(self) -> None:
+        self.clear_window()
+        radio_frame = Frame(self.window)
+        self.var = IntVar()
+        self.var.set(self.num_players)
+        radio_3 = Radiobutton(radio_frame, text='3 Players', variable=self.var, value=3,
+                              command=self.make_n_player)
+        radio_4 = Radiobutton(radio_frame, text='4 Players', variable=self.var, value=4,
+                              command=self.make_n_player)
+        radio_5 = Radiobutton(radio_frame, text='5 Players', variable=self.var, value=5,
+                              command=self.make_n_player)
+        radio_3.pack(side='top')
+        radio_4.pack(side='top')
+        radio_5.pack(side='top')
+        radio_frame.pack(side='bottom',anchor='center')
+
+        back_button = Button(self.window,text='Main Menu',command=self.start_screen)
+        back_button.pack(side='left', anchor='s')
+
+    def make_n_player(self) -> None:
+        n = self.var.get()
+        self.num_players = n
+        self.players = self.five_players[:n]
+
+
+    def show_instructions(self) -> None:
+        self.clear_window()
         instructions_label = Label(self.window, text=hearts_instructions, justify='left')
         instructions_label.pack(side='top', anchor='center')
-        back_button = Button(self.window,text='Back',command=self.start_screen)
+        back_button = Button(self.window,text='Main Menu',command=self.start_screen)
         back_button.pack(side='left', anchor='s')
+
+    def stats_screen(self) -> None:
+        self.clear_window()
+        label_text = self.game_stats
+        if self.game_stats == '':
+            label_text = 'No stats available'
+        stats_label = Label(self.window, text=label_text)
+        stats_label.pack(side='top',anchor='center')
+        back_button = Button(self.window, text='Main Menu', command=self.start_screen)
+        back_button.pack(side='left', anchor='s')
+
+    def clear_window(self) -> None:
+        for child in self.window.winfo_children():
+            child.destroy()
 
 ################################################################
 
-    def max_points(self):
+    def min_points(self) -> int:
+        return min(self.points_dict.values())
+
+    def max_points(self) -> int:
         return max(self.points_dict.values())
 
-    def sort_hand(self, player):
+    def sort_hand(self, player) -> None:
         hand = self.hands_dict[player]
         for num_passes in range(len(hand)-1):
             has_swapped = False
@@ -87,7 +137,7 @@ class Gui:
                 break
         self.hands_dict[player] = hand
 
-    def deal_cards(self):
+    def deal_cards(self) -> None:
         shuffled_deck = deck_list.copy()
         if self.num_players != 4:
             shuffled_deck.remove((2,'diamond'))
@@ -117,7 +167,7 @@ class Gui:
             self.sort_hand(player)
 
 
-    def change_current_player(self, player):
+    def change_current_player(self, player: str) -> None:
         self.current_player = player
         order = []
         first_index = self.players.index(self.current_player)
@@ -129,14 +179,14 @@ class Gui:
             p = order[i]
             self.player_labels[i].config(text=f'{p}: {self.round_points_dict[p]} points')
 
-    def next_player(self):
+    def next_player(self) -> None:
         current_index = self.players.index(self.current_player)
         next_index = (current_index + 1) % self.num_players
         next_player = self.players[next_index]
         self.change_current_player(next_player)
 
 
-    def add_to_pass(self, event):
+    def add_to_pass(self, event) -> None:
         card_tuple = event.widget.get_card()
         passing_cards = self.pass_cards[self.current_player]
         if card_tuple in passing_cards:
@@ -150,8 +200,7 @@ class Gui:
             confirm_pass_button = Button(self.hand_frame, text='Confirm Pass', command=self.pass_confirmed)
             confirm_pass_button.pack(side='top', anchor='w')
 
-    def pass_confirmed(self):
-        print(f'{self.current_player} passed {self.pass_cards[self.current_player]}')
+    def pass_confirmed(self) -> None:
         for card in self.pass_cards[self.current_player]:
             self.hands_dict[self.current_player].remove(card)
         self.hand_frame.destroy()
@@ -165,7 +214,7 @@ class Gui:
         self.next_turn_button.pack(side='bottom')
 
 
-    def pass_turn(self):
+    def pass_turn(self) -> None:
         self.next_turn_button.destroy()
         self.turns_played += 1
         self.hand_frame = Frame(self.window)
@@ -176,23 +225,24 @@ class Gui:
             new_card.bind('<Button-1>', self.add_to_pass)
             card_displays.append(new_card)
             new_card.pack(side='left')
-        self.hand_frame.pack(side='bottom')
+        self.hand_frame.pack(side='bottom', anchor='w')
 
-    def start_passing_phase(self):
+    def start_passing_phase(self) -> None:
         pass_indicator = self.round_number % self.num_players
         if pass_indicator != 0:
             self.pass_turn()
         else:
+            self.next_turn_button.destroy()
             self.finish_passing_phase()
 
 
-    def finish_passing_phase(self):
+    def finish_passing_phase(self) -> None:
         pass_indicator = self.round_number % self.num_players
         if pass_indicator != 0:
             # pass_distance is the number of players to
             # the right the cards in self.pass_cards should
             # be passed
-            pass_distance = [0,-1,1,-2,2][pass_indicator]
+            pass_distance = [0,1,-1,2,-2][pass_indicator]
             for i in range(self.num_players):
                 player =self.players[i]
                 pass_to = self.players[(i+pass_distance) % self.num_players]
@@ -215,14 +265,14 @@ class Gui:
 
 
 
-    def select_card(self, event):
+    def select_card(self, event) -> None:
         card = event.widget
         if card.can_play:
             self.selected_card = card
 
 ################################################################
 
-    def play_card(self):
+    def play_card(self) -> None:
         if self.selected_card is not None: # checked for playable in select_card
             #
             card_tuple = self.selected_card.get_card()
@@ -260,7 +310,7 @@ class Gui:
             self.next_turn_button = Button(self.window, text=f'Start next turn({self.current_player})', command=self.play_turn)
             self.next_turn_button.pack(side='bottom')
 
-    def play_turn(self):
+    def play_turn(self) -> None:
         self.next_turn_button.destroy()
         self.turns_played += 1
         ##
@@ -307,16 +357,17 @@ class Gui:
             new_card.bind('<Button-1>', self.select_card)
             card_displays.append(new_card)
             new_card.pack(side='left')
-        self.hand_frame.pack(side='bottom')
+        self.hand_frame.pack(side='bottom', anchor='w')
         #
 
-    def start_round(self):
+    def start_round(self) -> None:
+        self.initialize_round_values()
         self.deal_cards()
         self.start_passing_phase()
         #
         # self.play_turn() this is taken care of in passing phase
 
-    def finish_round(self):
+    def finish_round(self) -> None:
         if 26 in self.round_points_dict.values():
             for (player, points) in self.round_points_dict.items():
                 if points == 26:
@@ -327,26 +378,14 @@ class Gui:
             for (player, points) in self.round_points_dict.items():
                 self.points_dict[player] += points
         #
-        self.hands_dict = {p: [] for p in self.players}  # list so sortable
-        self.round_points_dict = {p: 0 for p in self.players}
-        self.change_current_player(self.players[0])
-        self.round_number += 1
-        self.can_play_hearts = False
-        self.selected_card = None
-        #
-        self.trick_suit = None
-        self.first_trick = True
-        self.turns_played = 0
-        self.cards_on_table = {}
         if self.max_points() >= self.points_till_loss:
             self.finish_game()
             return
         self.next_turn_button = Button(self.window, text=f'Start Round({self.current_player})',command=self.start_round)
         self.next_turn_button.pack(side='bottom')
 
-
-    def start_game(self):
-        self.buttons_frame.destroy()
+    def start_game(self) -> None:
+        self.clear_window()
         self.points_dict = {p: 0 for p in self.players}
         self.round_number = 1
         #
@@ -364,8 +403,28 @@ class Gui:
         self.table_frame.pack(side='top', anchor='center', pady=200)
         self.trick_cards = []
 
-    def finish_game(self):
-        pass
-
-
-
+    def finish_game(self) -> None:
+        self.clear_window()
+        winner = self.players[0]
+        winners_points = self.min_points()
+        points_text = ''
+        for player, points in self.points_dict.items():
+            if points == winners_points:
+                winner = player
+            info = f'{player}: {points} points'
+            self.game_stats += info + '\t'
+            points_text += '\n' + info
+        #
+        self.game_stats += '\n'
+        #
+        self.points_dict = {p: 0 for p in self.players}
+        buttons_frame = Frame(self.window)
+        winner_label = Label(buttons_frame,
+                             text='GAME OVER\n' + f'{winner} has won the game with {winners_points} points' + points_text)
+        home_button = Button(buttons_frame, text='Start Screen', command=self.start_screen)
+        stats_button = Button(buttons_frame, text='Game Stats', command=self.stats_screen)
+        #
+        winner_label.pack()
+        home_button.pack(side='top')
+        stats_button.pack(side='top')
+        buttons_frame.pack(side='bottom', anchor='center')
