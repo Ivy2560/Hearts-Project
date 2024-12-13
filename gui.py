@@ -37,17 +37,22 @@ class Gui:
         self.turns_played = 0
         self.cards_on_table = {}
         #
+        self.pass_cards = {}
+        for player in self.players:
+            self.pass_cards[player] = []
 
         self.start_screen()
 
     def start_screen(self):
+        for child in self.window.winfo_children():
+            child.destroy()
         self.buttons_frame = Frame(self.window)
 
         self.start_game = Button(self.buttons_frame, text='START GAME', command=self.start_game)
         self.game_options = Button(self.buttons_frame, text='Options')
-        self.game_instructions = Button(self.buttons_frame, text='Instructions')
+        self.game_instructions = Button(self.buttons_frame, text='Instructions', fg='red',command=self.show_instructions)
         self.game_stats = Button(self.buttons_frame, text='Local Stats')
-        # back button runs init
+        # back button runs start_screen
         #
         self.start_game.pack(side='top')
         self.game_options.pack(side='top')
@@ -55,6 +60,15 @@ class Gui:
         self.game_stats.pack(side='top')
         self.buttons_frame.pack(side='bottom',anchor='center')
 
+    def show_instructions(self):
+        #for child in self.window.winfo_children():
+        #    child.destroy()
+        instructions_label = Label(self.window, text=hearts_instructions, justify='left')
+        instructions_label.pack(side='top', anchor='center')
+        back_button = Button(self.window,text='Back',command=self.start_screen)
+        back_button.pack(side='left', anchor='s')
+
+################################################################
 
     def max_points(self):
         return max(self.points_dict.values())
@@ -103,18 +117,6 @@ class Gui:
             self.sort_hand(player)
 
 
-    def passing_phase(self):
-        pass_indicator = self.round_number % self.num_players
-        if pass_indicator == 1:  # pass to left
-            pass
-        elif pass_indicator == 2:  # pass to right
-            pass
-        elif pass_indicator == 3:  # pass across
-            # gets skipped in 3 player hearts
-            pass
-        elif pass_indicator == 0: # no pass
-            pass
-
     def change_current_player(self, player):
         self.current_player = player
         order = []
@@ -133,10 +135,92 @@ class Gui:
         next_player = self.players[next_index]
         self.change_current_player(next_player)
 
+
+    def add_to_pass(self, event):
+        card_tuple = event.widget.get_card()
+        passing_cards = self.pass_cards[self.current_player]
+        if card_tuple in passing_cards:
+            return
+        make_pass_button = True
+        if len(passing_cards) == 3:
+            self.pass_cards[self.current_player] = passing_cards[1:]
+            make_pass_button = False
+        self.pass_cards[self.current_player].append(card_tuple)
+        if make_pass_button and len(passing_cards) == 3:
+            confirm_pass_button = Button(self.hand_frame, text='Confirm Pass', command=self.pass_confirmed)
+            confirm_pass_button.pack(side='top', anchor='w')
+
+    def pass_confirmed(self):
+        print(f'{self.current_player} passed {self.pass_cards[self.current_player]}')
+        for card in self.pass_cards[self.current_player]:
+            self.hands_dict[self.current_player].remove(card)
+        self.hand_frame.destroy()
+        self.next_player()
+        #
+        if self.turns_played % self.num_players == 0:
+            self.finish_passing_phase()
+            return
+        self.next_turn_button = Button(self.window, text=f'Start Next Pass Turn({self.current_player})',
+                                       command=self.pass_turn)
+        self.next_turn_button.pack(side='bottom')
+
+
+    def pass_turn(self):
+        self.next_turn_button.destroy()
+        self.turns_played += 1
+        self.hand_frame = Frame(self.window)
+        #
+        card_displays = []
+        for card in self.hands_dict[self.current_player]:
+            new_card = PlayingCard(self.hand_frame, card)
+            new_card.bind('<Button-1>', self.add_to_pass)
+            card_displays.append(new_card)
+            new_card.pack(side='left')
+        self.hand_frame.pack(side='bottom')
+
+    def start_passing_phase(self):
+        pass_indicator = self.round_number % self.num_players
+        if pass_indicator != 0:
+            self.pass_turn()
+        else:
+            self.finish_passing_phase()
+
+
+    def finish_passing_phase(self):
+        pass_indicator = self.round_number % self.num_players
+        if pass_indicator != 0:
+            # pass_distance is the number of players to
+            # the right the cards in self.pass_cards should
+            # be passed
+            pass_distance = [0,-1,1,-2,2][pass_indicator]
+            for i in range(self.num_players):
+                player =self.players[i]
+                pass_to = self.players[(i+pass_distance) % self.num_players]
+                self.hands_dict[pass_to] += self.pass_cards[player]
+        #
+        for player in self.players:
+            self.sort_hand(player)
+        #
+        starting_card = (2, 'club')
+        if self.num_players == 5:
+            starting_card = (3, 'club')
+        for (player, hand) in self.hands_dict.items():
+            if starting_card in hand:
+                self.change_current_player(player)
+                break
+        #
+        self.next_turn_button = Button(self.window, text=f'Start play({self.current_player})',
+                                       command=self.play_turn)
+        self.next_turn_button.pack(side='bottom')
+
+
+
     def select_card(self, event):
         card = event.widget
         if card.can_play:
             self.selected_card = card
+
+################################################################
 
     def play_card(self):
         if self.selected_card is not None: # checked for playable in select_card
@@ -228,17 +312,9 @@ class Gui:
 
     def start_round(self):
         self.deal_cards()
-        self.passing_phase()
-        ##### passing phase does nothing right now
-        starting_card = (2,'club')
-        if self.num_players == 5:
-            starting_card = (3, 'club')
-        for (player,hand) in self.hands_dict.items():
-            if starting_card in hand:
-                self.change_current_player(player)
-                break
+        self.start_passing_phase()
         #
-        self.play_turn() # first trick when Q of spades can't be played
+        # self.play_turn() this is taken care of in passing phase
 
     def finish_round(self):
         if 26 in self.round_points_dict.values():
