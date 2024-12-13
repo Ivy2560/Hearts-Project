@@ -38,7 +38,6 @@ class PlayingCard(Canvas):
             self.value = value
 
         self.draw_card()
-        # self.bind('<Button-1>',self.card_selected)
 
     #
     def draw_diamond (self,x,y, color):

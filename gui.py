@@ -36,6 +36,7 @@ class Gui:
         self.first_trick = True
         self.turns_played = 0
         self.cards_on_table = {}
+        #
 
         self.start_screen()
 
@@ -126,15 +127,11 @@ class Gui:
             p = order[i]
             self.player_labels[i].config(text=f'{p}: {self.round_points_dict[p]} points')
 
-
-
     def next_player(self):
         current_index = self.players.index(self.current_player)
         next_index = (current_index + 1) % self.num_players
         next_player = self.players[next_index]
         self.change_current_player(next_player)
-
-
 
     def select_card(self, event):
         card = event.widget
@@ -145,6 +142,9 @@ class Gui:
         if self.selected_card is not None: # checked for playable in select_card
             #
             card_tuple = self.selected_card.get_card()
+            played_card = PlayingCard(self.table_frame, card_tuple)
+            played_card.pack(side='left')
+            self.trick_cards.append(played_card)
             #
             if card_tuple == ('queen', 'spade') or card_tuple[1] == 'heart':
                 self.can_play_hearts = True
@@ -157,8 +157,9 @@ class Gui:
             self.hand_frame.destroy()
             self.selected_card = None
             self.next_player()
-            print(self.turns_played)
             if self.turns_played % self.num_players == 0:
+                for card in self.trick_cards:
+                    card.destroy()
                 if len(self.hands_dict[self.players[0]]) == 0:
                     self.finish_round()
                     return
@@ -261,7 +262,7 @@ class Gui:
         self.first_trick = True
         self.turns_played = 0
         self.cards_on_table = {}
-        if self.max_points() < self.points_till_loss:
+        if self.max_points() >= self.points_till_loss:
             self.finish_game()
             return
         self.next_turn_button = Button(self.window, text=f'Start Round({self.current_player})',command=self.start_round)
@@ -282,6 +283,10 @@ class Gui:
             side, anchor = self.player_label_positions[i]
             new_label.pack(side=side,anchor=anchor)
             self.player_labels.append(new_label)
+        #
+        self.table_frame = Frame(self.window)
+        self.table_frame.pack(side='top', anchor='center', pady=200)
+        self.trick_cards = []
 
     def finish_game(self):
         pass
