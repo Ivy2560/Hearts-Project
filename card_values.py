@@ -118,9 +118,6 @@ hearts_card_order: dict = {(2, 'club'): 1, (3, 'club'): 2, (4, 'club'): 3, (5, '
 
 
 
-### BELOW DOESNT HAVE DOC STRING OR TYPE HINTING
-
-
 
 def highest_hearts(cards: list, suit: str) -> tuple:
     """

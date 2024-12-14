@@ -4,9 +4,10 @@ from card_values import *
 from playing_card import PlayingCard
 
 class Gui:
-    def __init__(self,window: Tk):
+    def __init__(self,window: Tk) -> None:
         """
-
+        Initializes the gui, a few of the necessary attributes
+        and runs start_screen
         :param window:
         """
         self.window = window
@@ -32,6 +33,11 @@ class Gui:
         self.start_screen()
 
     def initialize_round_values(self) -> None:
+        """
+        Initializes the values that need to be initialized
+        between/before each round
+        :return: None
+        """
         self.hands_dict = {p: [] for p in self.players}  # list so sortable
         self.round_points_dict = {p: 0 for p in self.players}
         if self.player_labels == []:
@@ -52,6 +58,10 @@ class Gui:
             self.pass_cards[player] = []
 
     def start_screen(self) -> None:
+        """
+        Creates the main menu for the game
+        :return: None
+        """
         self.clear_window()
         buttons_frame = Frame(self.window)
 
@@ -68,6 +78,11 @@ class Gui:
         buttons_frame.pack(side='bottom',anchor='center')
 
     def options_screen(self) -> None:
+        """
+        Creates the option screen where you can
+        change the number of players
+        :return: None
+        """
         self.clear_window()
         radio_frame = Frame(self.window)
         self.var = IntVar()
@@ -87,12 +102,20 @@ class Gui:
         back_button.pack(side='left', anchor='s')
 
     def make_n_player(self) -> None:
+        """
+        changes the number of players according to the radio buttons
+        :return: None
+        """
         n = self.var.get()
         self.num_players = n
         self.players = self.five_players[:n]
 
 
     def show_instructions(self) -> None:
+        """
+        Creates the instructions screen
+        :return: None
+        """
         self.clear_window()
         instructions_label = Label(self.window, text=hearts_instructions, justify='left')
         instructions_label.pack(side='top', anchor='center')
@@ -100,6 +123,11 @@ class Gui:
         back_button.pack(side='left', anchor='s')
 
     def stats_screen(self) -> None:
+        """
+        Creates the screen that shows the game
+        stats for that run of the program
+        :return: None
+        """
         self.clear_window()
         label_text = self.game_stats
         if self.game_stats == '':
@@ -110,18 +138,35 @@ class Gui:
         back_button.pack(side='left', anchor='s')
 
     def clear_window(self) -> None:
+        """
+        Removes every object from self.window
+        :return: None
+        """
         for child in self.window.winfo_children():
             child.destroy()
 
 ################################################################
 
     def min_points(self) -> int:
+        """
+        Returns the lowest number of points a player has
+        :return: int
+        """
         return min(self.points_dict.values())
 
     def max_points(self) -> int:
+        """
+        Returns the highest number of points a player has
+        :return: int
+        """
         return max(self.points_dict.values())
 
-    def sort_hand(self, player) -> None:
+    def sort_hand(self, player: str) -> None:
+        """
+        Takes a player and sorts their hand
+        :param player: str
+        :return: None
+        """
         hand = self.hands_dict[player]
         for num_passes in range(len(hand)-1):
             has_swapped = False
@@ -136,6 +181,12 @@ class Gui:
         self.hands_dict[player] = hand
 
     def deal_cards(self) -> None:
+        """
+        deals the cards. Redeals if a player ends up
+        with no cards that can be played in the first round
+        (unlikely but possible)
+        :return: None
+        """
         shuffled_deck = deck_list.copy()
         if self.num_players != 4:
             shuffled_deck.remove((2,'diamond'))
@@ -166,6 +217,12 @@ class Gui:
 
 
     def change_current_player(self, player: str) -> None:
+        """
+        Changes the current player to the input player and
+        updates relevant values.
+        :param player: str
+        :return: None
+        """
         self.current_player = player
         order = []
         first_index = self.players.index(self.current_player)
@@ -178,13 +235,24 @@ class Gui:
             self.player_labels[i].config(text=f'{p}: {self.round_points_dict[p]} points')
 
     def next_player(self) -> None:
+        """
+        Changes current player to the next player in
+        the turn order
+        :return: None
+        """
         current_index = self.players.index(self.current_player)
         next_index = (current_index + 1) % self.num_players
         next_player = self.players[next_index]
         self.change_current_player(next_player)
 
 
-    def add_to_pass(self, event) -> None:
+    def add_to_pass(self, event: Event) -> None:
+        """
+        Adds clicked card to the cards the current player
+        is selecting to pass during passing phase
+        :param event: Event
+        :return: None
+        """
         card_tuple = event.widget.get_card()
         passing_cards = self.pass_cards[self.current_player]
         if card_tuple in passing_cards:
@@ -199,6 +267,10 @@ class Gui:
             confirm_pass_button.pack(side='top', anchor='w')
 
     def pass_confirmed(self) -> None:
+        """
+        Confirms the cards the current player would like to pass
+        :return: None
+        """
         for card in self.pass_cards[self.current_player]:
             self.hands_dict[self.current_player].remove(card)
         self.hand_frame.destroy()
@@ -213,6 +285,10 @@ class Gui:
 
 
     def pass_turn(self) -> None:
+        """
+        Runs a pass turn for the current player
+        :return: None
+        """
         self.next_turn_button.destroy()
         self.turns_played += 1
         self.hand_frame = Frame(self.window)
@@ -226,6 +302,11 @@ class Gui:
         self.hand_frame.pack(side='bottom', anchor='w')
 
     def start_passing_phase(self) -> None:
+        """
+        Starts the passing phase. If it is a round with no
+        passing, no passing will happen
+        :return: None
+        """
         pass_indicator = self.round_number % self.num_players
         if pass_indicator != 0:
             self.pass_turn()
@@ -235,6 +316,12 @@ class Gui:
 
 
     def finish_passing_phase(self) -> None:
+        """
+        Completes the passing phase. If no passing has
+        happened, it will just create the button to
+        start play
+        :return: None
+        """
         pass_indicator = self.round_number % self.num_players
         if pass_indicator != 0:
             # pass_distance is the number of players to
@@ -263,7 +350,13 @@ class Gui:
 
 
 
-    def select_card(self, event) -> None:
+    def select_card(self, event: Event) -> None:
+        """
+        Selects a card to play for the current player
+        during a round
+        :param event: Event
+        :return: None
+        """
         card = event.widget
         if card.can_play:
             self.selected_card = card
@@ -271,6 +364,12 @@ class Gui:
 ################################################################
 
     def play_card(self) -> None:
+        """
+        Plays the most recent legal card the current
+        player has selected. If no card has been selected
+        this will do nothing
+        :return: None
+        """
         if self.selected_card is not None: # checked for playable in select_card
             #
             card_tuple = self.selected_card.get_card()
@@ -309,6 +408,10 @@ class Gui:
             self.next_turn_button.pack(side='bottom')
 
     def play_turn(self) -> None:
+        """
+        Plays a turn for the current player
+        :return: None
+        """
         self.next_turn_button.destroy()
         self.turns_played += 1
         ##
@@ -359,6 +462,10 @@ class Gui:
         #
 
     def start_round(self) -> None:
+        """
+        Starts a round
+        :return: None
+        """
         self.initialize_round_values()
         self.deal_cards()
         self.start_passing_phase()
@@ -366,6 +473,10 @@ class Gui:
         # self.play_turn() this is taken care of in passing phase
 
     def finish_round(self) -> None:
+        """
+        Finishes a round
+        :return: None
+        """
         if 26 in self.round_points_dict.values():
             for (player, points) in self.round_points_dict.items():
                 if points == 26:
@@ -383,6 +494,10 @@ class Gui:
         self.next_turn_button.pack(side='bottom')
 
     def start_game(self) -> None:
+        """
+        Starts a game
+        :return: None
+        """
         self.clear_window()
         self.points_dict = {p: 0 for p in self.players}
         self.round_number = 1
@@ -402,6 +517,10 @@ class Gui:
         self.trick_cards = []
 
     def finish_game(self) -> None:
+        """
+        Finishes a game
+        :return: None
+        """
         self.clear_window()
         winner = self.players[0]
         winners_points = self.min_points()

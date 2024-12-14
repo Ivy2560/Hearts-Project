@@ -1,9 +1,9 @@
 from gui import *
 
-def main():
+def main() -> None:
     """
-
-    :return:
+    Runs the game hearts
+    :return: None
     """
     window = Tk()
     window.title('Hearts')

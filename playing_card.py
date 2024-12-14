@@ -1,13 +1,14 @@
 from tkinter import *
 from card_values import card_suits, card_numbers, deck_list
+from typing import Union
 
 class PlayingCard(Canvas):
-    def __init__(self, master, card, can_play=True, value=None):
+    def __init__(self, master: Tk, card: tuple, can_play: bool=True, value: Union[int,str,None]=None):
         """
-
-        :param master:
-        :param card:
-        :param can_play:
+        Creates an instance of a Playing card canvas
+        :param master: Tk
+        :param card: tuple
+        :param can_play: bool
         :param value:
         """
         (number, suit) = card
@@ -40,11 +41,25 @@ class PlayingCard(Canvas):
         self.draw_card()
 
     #
-    def draw_diamond (self,x,y, color):
+    def draw_diamond (self,x: int,y: int, color: str) -> None:
+        """
+        Draws a diamond centered at x,y on the canvas
+        :param x: int
+        :param y: int
+        :param color: str
+        :return: None
+        """
         coordinates = [x,y-14, x+7,y, x,y+14, x-7,y]
         self.create_polygon(coordinates, fill=color)
 
-    def draw_heart(self,x,y,color):
+    def draw_heart(self,x: int,y: int,color: str) -> None:
+        """
+        Draws a heart centered at x,y on the canvas
+        :param x: int
+        :param y: int
+        :param color: str
+        :return: None
+        """
         coordinates_1 = [x,y+10, x+10,y-1, x-9,y-1]
         self.create_polygon(coordinates_1, fill=color)
         coordinates_2 = [x,y+12, x+8,y-2, x-8,y-2]
@@ -55,7 +70,14 @@ class PlayingCard(Canvas):
         coordinates_4 = [x,y, x+10,y-10]
         self.create_oval(coordinates_4, fill=color, outline=color)
 
-    def draw_club(self,x, y, color):
+    def draw_club(self,x: int, y: int, color: str) -> None:
+        """
+        Draws a club centered at x,y on the canvas
+        :param x: int
+        :param y: int
+        :param color: str
+        :return: None
+        """
         coordinates_1 = [x-5,y-13, x+5,y-3]
         self.create_oval(coordinates_1, fill=color, outline=color)
         coordinates_2 = [x-10,y-4, x,y+6]
@@ -68,7 +90,14 @@ class PlayingCard(Canvas):
         coordinates_5 = [x,y, x+4,y+12, x-4,y+12]
         self.create_polygon(coordinates_5, fill=color)
 
-    def draw_spade(self, x, y, color):
+    def draw_spade(self, x: int, y: int, color: str) -> None:
+        """
+        Draws a spade centered at x,y on the canvas
+        :param x: int
+        :param y: int
+        :param color: str
+        :return: None
+        """
         coordinates_1 = [x,y-9, x+9,y-2, x-9,y-2]
         self.create_polygon(coordinates_1, fill=color)
         coordinates_2 = [x,y-12, x+7,y, x-7,y]
@@ -82,11 +111,23 @@ class PlayingCard(Canvas):
         coordinates_5 = [x,y+1, x+4,y+11, x-4,y+11]
         self.create_polygon(coordinates_5, fill=color)
 
-    def draw_char(self,x, y , char, color):
+    def draw_char(self,x: int, y: int, char: str, color: str) -> None:
+        """
+        Draws a character centered at x,y on the canvas
+        :param x: int
+        :param y: int
+        :param char: str
+        :param color: str
+        :return: None
+        """
         self.create_text([x,y], text=str(char), fill=color, font=('Helvetica 28'))
 
     #
-    def draw_card(self):
+    def draw_card(self) -> None:
+        """
+        Draws the card suit and number
+        :return: None
+        """
         if self.suit == 'club':
             color = 'black'
             self.draw_club(20, 55, color)
@@ -106,16 +147,32 @@ class PlayingCard(Canvas):
             char = str(self.number)
         self.draw_char(20,25,char, color)
 
-    def get_value(self):
+    def get_value(self) -> int:
+        """
+        Returns the cards numeric value
+        :return: int
+        """
         return self.value
 
-    def get_card(self):
+    def get_card(self) -> tuple:
+        """
+        returns the cards number and suit as a tuple
+        :return: tuple
+        """
         return (self.number, self.suit)
 
-    def get_can_play(self):
+    def get_can_play(self) -> bool:
+        """
+        returns whether or not a card can be played
+        :return: bool
+        """
         return self.can_play
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Overrides default __str__ function
+        :return: str
+        """
         return f'{self.number} of {self.suit}s'
 
 """
