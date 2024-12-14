@@ -327,7 +327,7 @@ class Gui:
             # pass_distance is the number of players to
             # the right the cards in self.pass_cards should
             # be passed
-            pass_distance = [0,1,-1,2,-2][pass_indicator]
+            pass_distance = [0,-1,1,-2,2][pass_indicator]
             for i in range(self.num_players):
                 player =self.players[i]
                 pass_to = self.players[(i+pass_distance) % self.num_players]
