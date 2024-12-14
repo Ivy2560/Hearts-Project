@@ -3,6 +3,13 @@ from card_values import card_suits, card_numbers, deck_list
 
 class PlayingCard(Canvas):
     def __init__(self, master, card, can_play=True, value=None):
+        """
+
+        :param master:
+        :param card:
+        :param can_play:
+        :param value:
+        """
         (number, suit) = card
         if number not in card_numbers:
             raise ValueError('Invalid card number')
@@ -31,7 +38,6 @@ class PlayingCard(Canvas):
             self.value = value
 
         self.draw_card()
-        # self.bind('<Button-1>',self.card_selected)
 
     #
     def draw_diamond (self,x,y, color):
@@ -105,6 +111,9 @@ class PlayingCard(Canvas):
 
     def get_card(self):
         return (self.number, self.suit)
+
+    def get_can_play(self):
+        return self.can_play
 
     def __str__(self):
         return f'{self.number} of {self.suit}s'
