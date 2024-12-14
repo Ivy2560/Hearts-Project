@@ -20,7 +20,7 @@ class Gui:
                                        ('right','center')]
         self.player_labels = []
         # toggleable by user
-        self.points_till_loss = 1
+        self.points_till_loss = 100
         self.jack_of_diamonds = False
         self.five_players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5']
         self.num_players = 4
@@ -52,8 +52,6 @@ class Gui:
             self.pass_cards[player] = []
 
     def start_screen(self) -> None:
-        print(self.num_players)
-        print(self.players)
         self.clear_window()
         buttons_frame = Frame(self.window)
 
