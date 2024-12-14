@@ -1,7 +1,7 @@
 from cProfile import label
 from tkinter import *
 from card_values import *
-from deck_of_cards import PlayingCard
+from playing_card import PlayingCard
 
 class Gui:
     def __init__(self,window: Tk):
